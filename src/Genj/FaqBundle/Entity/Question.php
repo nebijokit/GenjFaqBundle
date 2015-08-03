@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\MappedSuperclass
  * @ORM\Entity(repositoryClass="Genj\FaqBundle\Entity\QuestionRepository")
  * @ORM\Table(name="genj_faq_question")
+ * @Gedmo\TranslationEntity(class="Genj\FaqBundle\Entity\QuestionTranslation")
  *
  * @package Genj\FaqBundle\Entity
  */
@@ -31,11 +32,13 @@ class Question
 
     /**
      * @ORM\Column(type="string", length=255, nullable=false)
+     * @Gedmo\Translatable
      */
     protected $headline;
 
     /**
      * @ORM\Column(type="text", nullable=true)
+     * @Gedmo\Translatable
      */
     protected $body;
 
@@ -62,6 +65,23 @@ class Question
      * @ORM\Column(type="string", length=50, nullable=false)
      */
     protected $slug;
+
+    /**
+     * @ORM\OneToMany(
+     *   targetEntity="Genj\FaqBundle\Entity\QuestionTranslation",
+     *   mappedBy="object",
+     *   cascade={"persist", "remove"}
+     * )
+     */
+    private $translations;
+
+    /**
+     * constructor
+     */
+    public function __construct()
+    {
+        $this->translations = new ArrayCollection();
+    }
 
     /**
      * Get id
@@ -272,5 +292,37 @@ class Question
             'categorySlug' => $this->getCategory()->getSlug(),
             'questionSlug' => $this->getSlug()
         );
+    }
+
+    public function getTranslations()
+    {
+        return $this->translations;
+    }
+
+    /**
+     * @param QuestionTranslation $t
+     *
+     * @return $this
+     */
+    public function addTranslation(QuestionTranslation $t)
+    {
+        if (!$this->translations->contains($t)) {
+            $this->translations[] = $t;
+            $t->setObject($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param QuestionTranslation $translations
+     *
+     * @return $this
+     */
+    public function removeTranslation(QuestionTranslation $translations)
+    {
+        $this->translations->removeElement($translations);
+
+        return $this;
     }
 }
