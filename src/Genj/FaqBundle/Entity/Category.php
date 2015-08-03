@@ -2,6 +2,7 @@
 
 namespace Genj\FaqBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -14,6 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  *     name="genj_faq_category",
  *     indexes={@ORM\Index(name="is_active_idx", columns={"is_active"})}
  * )
+ * @Gedmo\TranslationEntity(class="Genj\FaqBundle\Entity\CategoryTranslation")
  *
  * @package Genj\FaqBundle\Entity
  */
@@ -33,6 +35,7 @@ class Category
 
     /**
      * @ORM\Column(type="string", length=255, nullable=false)
+     * @Gedmo\Translatable
      */
     protected $headline;
 
@@ -69,6 +72,23 @@ class Category
      * @ORM\Column(type="string", length=50, nullable=false)
      */
     protected $slug;
+
+    /**
+     * @ORM\OneToMany(
+     *   targetEntity="FaqBundle\Entity\CategoryTranslation",
+     *   mappedBy="object",
+     *   cascade={"persist", "remove"}
+     * )
+     */
+    private $translations;
+
+    /**
+     * constructor
+     */
+    public function __construct()
+    {
+        $this->translations = new ArrayCollection();
+    }
 
     /**
      * Get id
@@ -313,5 +333,32 @@ class Category
         return array(
             'categorySlug' => $this->getSlug()
         );
+    }
+
+    public function getTranslations()
+    {
+        return $this->translations;
+    }
+
+    public function addTranslation(CategoryTranslation $t)
+    {
+        if (!$this->translations->contains($t)) {
+            $this->translations[] = $t;
+            $t->setObject($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param CategoryTranslation $translations
+     *
+     * @return $this
+     */
+    public function removeTranslation(CategoryTranslation $translations)
+    {
+        $this->translations->removeElement($translations);
+
+        return $this;
     }
 }
