@@ -24,7 +24,7 @@ class Question
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Category", inversedBy="questions", cascade={"all"})
+     * @ORM\ManyToOne(targetEntity="Category", inversedBy="questions")
      * @ORM\OrderBy({"rank" = "asc"})
      */
     protected $category;
@@ -35,7 +35,7 @@ class Question
     protected $headline;
 
     /**
-     * @ORM\Column(type="text", nullable=false)
+     * @ORM\Column(type="text", nullable=true)
      */
     protected $body;
 
