@@ -75,7 +75,7 @@ class Category
 
     /**
      * @ORM\OneToMany(
-     *   targetEntity="FaqBundle\Entity\CategoryTranslation",
+     *   targetEntity="Genj\FaqBundle\Entity\CategoryTranslation",
      *   mappedBy="object",
      *   cascade={"persist", "remove"}
      * )
